@@ -3,7 +3,6 @@ function Card({imgUrl, label, onClick }) {
         <div className="card" onClick={onClick}>
           <img srcSet={imgUrl} alt={label}/>
           <p>{label}</p>
-          <p>index</p>
         </div>
     );
 }

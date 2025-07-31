@@ -35,23 +35,14 @@ function GameBoard({ numberOfCards }) {
 
   useEffect(() => {
     // for dealing with side effects
-    const fetchData = async () => {
-      try {
-        const response = await fetch(SERVER);
-        if (!response.ok) {
-          throw new Error("Network response fault");
-        }
+    function fetchPokemonData(){
+      fetch(`https://pokeapi.co/api/v2/pokemon?limit=11`)
+      .then((response) => response.json())
+      .then((allPokemons) => console.log(allPokemons))
+    }
 
-        const result = await response.json(); // another promise
-        setDataFromServer(result);
-      } catch (e) {
-        setError(e.message); // set error from fetch
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchPokemonData();
+    setLoading(false)
   }, []); // empty the dependency array
 
 

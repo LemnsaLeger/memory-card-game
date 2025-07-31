@@ -12,111 +12,89 @@ function GameBoard({ numberOfCards }) {
   const [loading, setLoading] = useState(true);
   const [isHome, setHome] = useState(false);
 
-  let data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-
-  let realData = [];
-
-  while (realData.length < numberOfCards) {
-    realData[realData.length] = data[realData.length];
+  // generate card ids (0 to numberOfCards - 1)
+  const realData = [];
+  for(let i = 0; i < numberOfCards; i++) {
+    realData.push(i);
   }
 
-  // handle click
   const handleClick = (target) => {
-    alert(cards.indexOf(target));
-  };
+    alert(realData.indexOf(target))
+  }
 
-  const cards = Array.from(document.querySelectorAll(".cards .card"));
-
-  console.log(cards);
-
+  // updated fetch logic
   useEffect(() => {
-    // for dealing with side effects
-    function fetchPokemonData() {
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=${numberOfCards}`)
-        .then((response) => response.json())
-        .then((allPokemons) => {
-          console.log(allPokemons);
+    async function fetchPokemonData() {
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${numberOfCards}`);
+        const allPokemons = await response.json();
 
-          // we received a hashed(object[key- value ] pair) data from the server
-          // And we have pokemon's name and url
-          // so another fetch using the url
+        const fetchedPokemon = [];
+        const fetchPromises = allPokemons.results.map(async (pokemon) => {
+          const pokemonResponse = await fetch(pokemon.url);
+          const pokemonData = await pokemonResponse.json();
 
-          allPokemons.results.forEach((pokemon) => {
-            fetchPokemon(pokemon);
-          });
+          fetchedPokemon.push(pokemonData);
         });
+
+        await Promise.all(fetchPromises);
+
+        const pokenmonMap = {};
+        fetchedPokemon.forEach((pokemon) => {
+          pokenmonMap[pokemon.species.name] = pokemon;
+        });
+
+        setDataFromServer(pokenmonMap);
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
     }
 
     fetchPokemonData();
-    setLoading(false);
 
-    // function to fetch pokemon data
-    function fetchPokemon(pokemon) {
-      let url = pokemon.url;
-      fetch(url)
-        .then((response) => response.json())
-        .then(function (pokemonData) {
-          console.log(pokemonData);
+  }, [numberOfCards]);
 
-          setDataFromServer((prevData) => {
-            return {
-              ...prevData,
-              [pokemonData.species.name]: pokemonData,
-            };
-          });
-        });
-    }
-  }, []); // empty the dependency array
-  console.log(dataFromServer);
-  const handleHome = () => {
-    setHome(true);
+
+  // helper function to give the poke's url for the image display
+  const pokemonImgUrl = (pokemonId) => {
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
   };
+
+
+  if (loading) return <p className="loading text">Getting things ready Pal 👌..</p>;
+
+  if (error) return <p className="error">Error loading: {error.message}</p>;
+
+  if (isHome) return <HomePage />;
 
   return (
     <>
-      {loading ? (
-        <p className="loading text">Getting things ready pal 👌..</p>
-      ) : (
-        <>
-          <section className="scoreboard">
-            <p className="score">
-              Score: <span>{score}</span>
-            </p>
-            <p className="highscore">
-              Highest Score: <span>{highscore}</span>
-            </p>
-          </section>
+    <section className="scoreboard">
+      <p className="score">Score: <span>{score}</span></p>
+      <p className="highscore">Highest Score: <span>{highscore}</span></p>
+      </section>
 
-          <section className="cards">
-            // map realData to create the required number of cards
-            // if dataFromServer is available, desctructure the pokemon data
-            // create a card for each pokemon
-            {realData.map((d, k) => {
-              if (dataFromServer) {
-                const pokemonNames = Object.keys(dataFromServer);
-                const pokemonName = pokemonNames[k];
-                const pokemonData = dataFromServer[pokemonName];
-                console.log(pokemonData);
-                if (pokemonData) {
-                  return (
-                    <Card
-                      label={pokemonData.species.name}
-                      key={k + 1}
-                      onClick={() => handleClick(cards[d])}
-                    />
-                  );
-                }
-              }
-            })}
-          </section>
+      <section className="cards">
+        {realData.map((_, k) => {
+          const pokemonNames = Object.keys(dataFromServer);
+          const pokemonName = pokemonNames[k];
+          const pokemonData = dataFromServer[pokemonName];
 
-          <button onClick={handleHome}>Home</button>
+          return (
+            <Card
+              label={pokemonData.species.name}
+              key={k}
+              onclick={() => handleClick(k)}
+              imgUrl={pokemonImgUrl(pokemonData.id)}
+              />
+          );
+        })}
+      </section>
 
-          <footer>
-            developed by <a href="">@devlemnsa</a>
-          </footer>
-        </>
-      )}
+      <button onClick={() => setHome(true)}>Home</button>
+      <footer>developed by <a href="">@devlemnsa</a></footer>
     </>
   );
 }

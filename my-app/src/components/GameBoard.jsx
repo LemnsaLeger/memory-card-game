@@ -3,8 +3,6 @@ import { useEffect } from "react";
 
 import HomePage from "./HomePage";
 import Card from "./Card";
-import f from "../../server/images/20240131_194318.jpg";
-
 
 function GameBoard({ numberOfCards }) {
   const [score, setScore] = useState(0);
@@ -13,8 +11,6 @@ function GameBoard({ numberOfCards }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isHome, setHome] = useState(false);
-
-  const SERVER = "server/data.json"; // mock
 
   let data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
@@ -35,17 +31,43 @@ function GameBoard({ numberOfCards }) {
 
   useEffect(() => {
     // for dealing with side effects
-    function fetchPokemonData(){
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=11`)
-      .then((response) => response.json())
-      .then((allPokemons) => console.log(allPokemons))
+    function fetchPokemonData() {
+      fetch(`https://pokeapi.co/api/v2/pokemon?limit=${numberOfCards}`)
+        .then((response) => response.json())
+        .then((allPokemons) => {
+          console.log(allPokemons);
+
+          // we received a hashed(object[key- value ] pair) data from the server
+          // And we have pokemon's name and url
+          // so another fetch using the url
+
+          allPokemons.results.forEach((pokemon) => {
+            fetchPokemon(pokemon);
+          });
+        });
     }
 
     fetchPokemonData();
-    setLoading(false)
+    setLoading(false);
+
+    // function to fetch pokemon data
+    function fetchPokemon(pokemon) {
+      let url = pokemon.url;
+      fetch(url)
+        .then((response) => response.json())
+        .then(function (pokemonData) {
+          console.log(pokemonData);
+
+          setDataFromServer((prevData) => {
+            return {
+              ...prevData,
+              [pokemonData.species.name]: pokemonData,
+            };
+          });
+        });
+    }
   }, []); // empty the dependency array
-
-
+  console.log(dataFromServer);
   const handleHome = () => {
     setHome(true);
   };
@@ -66,9 +88,26 @@ function GameBoard({ numberOfCards }) {
           </section>
 
           <section className="cards">
-            {realData.map((d, k) => (
-              <Card label={d} key={k} onClick={() => handleClick(cards[d])}/>
-            ))}
+            // map realData to create the required number of cards
+            // if dataFromServer is available, desctructure the pokemon data
+            // create a card for each pokemon
+            {realData.map((d, k) => {
+              if (dataFromServer) {
+                const pokemonNames = Object.keys(dataFromServer);
+                const pokemonName = pokemonNames[k];
+                const pokemonData = dataFromServer[pokemonName];
+                console.log(pokemonData);
+                if (pokemonData) {
+                  return (
+                    <Card
+                      label={pokemonData.species.name}
+                      key={k + 1}
+                      onClick={() => handleClick(cards[d])}
+                    />
+                  );
+                }
+              }
+            })}
           </section>
 
           <button onClick={handleHome}>Home</button>

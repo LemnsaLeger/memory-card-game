@@ -12,10 +12,38 @@ function GameBoard({ numberOfCards }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isHome, setHome] = useState(false);
+  const [clickedCards, setClickedCards] = useState([]);
 
   const handleClick = (target) => {
-    alert(realData.indexOf(target));
+    console.log("handleclick fired");
+    const pokemonNames = Object.keys(dataFromServer);
+    const pokemonName = pokemonNames[target];
+    console.log("clicked card ", pokemonName);
+
+
+    calculateScore();
+
+    setClickedCards((prevClickedCards) => {
+      if(!prevClickedCards.includes(pokemonName) && prevClickedCards.length < numberOfCards) {// check if the card has not been clicked before and if the number of clicked cards is less than the number of cards
+        return [...prevClickedCards, pokemonName];
+      } else{
+        alert("Game Over! Your memory glitched 😂! Try Again 😎 You've got this..");
+        return prevClickedCards; // return the previous to prevent the alert twice
+      }
+    }
+  );
   };
+
+  // helper function to calculate score and highscore
+  const calculateScore = () => {
+    setScore((prevScore) => {
+      const newScore = prevScore + 1;
+      if (newScore > highscore) {
+        setHighScore(newScore);
+      }
+      return newScore;
+    });
+  }
 
   // function to shuffle cards in array(Fisher-Yates shuffle algorithm)
   const shuffleArray = (array) => {

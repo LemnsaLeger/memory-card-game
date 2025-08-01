@@ -1,6 +1,9 @@
 function Card({imgUrl, label, onClick }) {
     return (
-        <div className="card" onClick={onClick}>
+        <div className="card" onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+            }}>
           <img srcSet={imgUrl} alt={label}/>
           <p>{label}</p>
         </div>

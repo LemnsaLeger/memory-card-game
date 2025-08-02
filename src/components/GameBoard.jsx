@@ -211,7 +211,7 @@ function GameBoard({ numberOfCards, mode }) {
 
       <button onClick={() => setHome(true)}>Home</button>
       <footer>
-        developed by <a href="">@devlemnsa</a>
+        developed by <a href="https://x.com/devlemnsa" target="_blank">@devlemnsa</a>
       </footer>
     </>
   );

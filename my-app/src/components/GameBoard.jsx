@@ -18,8 +18,9 @@ function GameBoard({ numberOfCards }) {
     console.log("handleclick fired");
     const pokemonNames = Object.keys(dataFromServer);
     const pokemonName = pokemonNames[target];
-    console.log("clicked card ", pokemonName);
-
+    
+    // shuffle the cards when a card is clicked
+    setRealData(prevData => shuffleArray(prevData))
 
     calculateScore();
 

@@ -31,11 +31,11 @@ function HomePage() {
       </>
     );
   } else if (level === "easy") {
-    return <GameBoard numberOfCards={3} />;
+    return <GameBoard numberOfCards={3} mode={level} />;
   } else if (level === "medium") {
-    return <GameBoard numberOfCards={6} />
+    return <GameBoard numberOfCards={6} mode={level} />;
   } else {
-    return <GameBoard numberOfCards={12} />
+    return <GameBoard numberOfCards={12} mode={level} />;
   }
 }
 

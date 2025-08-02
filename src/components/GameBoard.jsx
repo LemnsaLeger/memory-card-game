@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import HomePage from "./HomePage";
 import Card from "./Card";
+import "../index.css";
 
 function GameBoard({ numberOfCards, mode }) {
   const [score, setScore] = useState(0);

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import HomePage from "./HomePage";
 import Card from "./Card";
 
-function GameBoard({ numberOfCards }) {
+function GameBoard({ numberOfCards, mode }) {
   const [score, setScore] = useState(0);
   const [highscore, setHighScore] = useState(0);
   const [realData, setRealData] = useState([]);
@@ -54,6 +54,7 @@ function GameBoard({ numberOfCards }) {
     setClickedCards([]);
     setScore(0);
     setRealData(shuffleArray(realData)); 
+    saveHighScore(mode, highscore);
 
     const response = prompt("Do you want to play again? (yes/no)");
     if (response && response.toLowerCase() === "yes") {
@@ -62,6 +63,7 @@ function GameBoard({ numberOfCards }) {
       setClickedCards([]);
       setScore(0);
       setRealData(shuffleArray(realData)); 
+      setHighScore(getHighScore(mode));
     } else {
       setHome(true);
       setClickedCards([]);
@@ -80,6 +82,27 @@ function GameBoard({ numberOfCards }) {
     }
     return shuffled;
   };
+
+  // load high score on mount
+  useEffect(() => {
+    setHighScore(getHighScore(mode));
+  }, [mode]);
+
+  // save high score whenever it changes
+  useEffect(() => {
+    saveHighScore(mode, highscore);
+  }, [highscore, mode]);
+
+  // save game mode high scores to l
+  const saveHighScore = (mode, value) => {
+      localStorage.setItem(`${mode}_highscore`, JSON.stringify(value));
+  }
+
+  // get high score from local storage
+  const getHighScore = (mode) => {
+    const score = localStorage.getItem(mode + "_highscore");
+    return score ? parseInt(score, 10) : 0;
+  }
 
   // updated fetch logic
   useEffect(() => {

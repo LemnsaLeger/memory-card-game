@@ -27,7 +27,16 @@ function GameBoard({ numberOfCards, mode }) {
 
     setClickedCards((prevClickedCards) => {
       if(!prevClickedCards.includes(pokemonName) && prevClickedCards.length < numberOfCards) {// check if the card has not been clicked before and if the number of clicked cards is less than the number of cards
-        return [...prevClickedCards, pokemonName];
+        const updatedClickedCards = [...prevClickedCards, pokemonName];
+        if(updatedClickedCards.length === numberOfCards) {
+          alert("Congratulations! You beat the level! 🎉");
+          setClickedCards([]);
+          setScore(0);
+          setRealData(shuffleArray(realData));
+          setHighScore(getHighScore(mode));
+          return [];
+        }
+        return updatedClickedCards;
       } else {
         handleGameOver();
         return []; 

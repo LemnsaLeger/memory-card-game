@@ -13,12 +13,13 @@ function GameBoard({ numberOfCards }) {
   const [loading, setLoading] = useState(true);
   const [isHome, setHome] = useState(false);
   const [clickedCards, setClickedCards] = useState([]);
+  const [isGameOver, setGameOver] = useState(false);
 
   const handleClick = (target) => {
     console.log("handleclick fired");
     const pokemonNames = Object.keys(dataFromServer);
     const pokemonName = pokemonNames[target];
-    
+
     // shuffle the cards when a card is clicked
     setRealData(prevData => shuffleArray(prevData))
 
@@ -27,9 +28,9 @@ function GameBoard({ numberOfCards }) {
     setClickedCards((prevClickedCards) => {
       if(!prevClickedCards.includes(pokemonName) && prevClickedCards.length < numberOfCards) {// check if the card has not been clicked before and if the number of clicked cards is less than the number of cards
         return [...prevClickedCards, pokemonName];
-      } else{
-        alert("Game Over! Your memory glitched 😂! Try Again 😎 You've got this..");
-        return prevClickedCards; // return the previous to prevent the alert twice
+      } else {
+        handleGameOver();
+        return []; 
       }
     }
   );
@@ -44,6 +45,30 @@ function GameBoard({ numberOfCards }) {
       }
       return newScore;
     });
+  }
+
+  // Game Over
+  const handleGameOver = () => {
+    setGameOver(true);
+    alert("Game Over! Your memory glitched 😂! Try Again 😎 You've got this..");
+    setClickedCards([]);
+    setScore(0);
+    setRealData(shuffleArray(realData)); 
+
+    const response = prompt("Do you want to play again? (yes/no)");
+    if (response && response.toLowerCase() === "yes") {
+      setGameOver(false);
+      setHome(false);
+      setClickedCards([]);
+      setScore(0);
+      setRealData(shuffleArray(realData)); 
+    } else {
+      setHome(true);
+      setClickedCards([]);
+      setScore(0);
+      setRealData(shuffleArray(realData)); 
+      setGameOver(false);
+    }
   }
 
   // function to shuffle cards in array(Fisher-Yates shuffle algorithm)

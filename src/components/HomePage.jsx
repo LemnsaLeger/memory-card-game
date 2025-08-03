@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import GameBoard from "./GameBoard";
 
+import "../index.css";
+
 function HomePage() {
   const [level, setLevel] = useState("");
 

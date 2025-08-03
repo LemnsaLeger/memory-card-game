@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import HomePage from "./HomePage";
 import Card from "./Card";
+import "../index.css";
 
 import Modal from "./instructions_modal";
 
@@ -215,7 +216,7 @@ function GameBoard({ numberOfCards, mode }) {
 
       <button onClick={() => setHome(true)}>Home</button>
       <footer>
-        developed by <a href="">@devlemnsa</a>
+        developed by <a href="https://x.com/devlemnsa" target="_blank">@devlemnsa</a>
       </footer>
     </>
   );

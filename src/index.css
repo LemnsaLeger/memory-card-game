@@ -79,8 +79,12 @@ button:focus-visible {
   .card {
     background-color: #f9f9f9;
     border: 1px solid #020202;
-    color: #fff;
+    color: #000000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .scoreboard p {
+    color: #000000 !important;
   }
 }
 

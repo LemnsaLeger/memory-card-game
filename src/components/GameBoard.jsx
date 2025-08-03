@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import HomePage from "./HomePage";
 import Card from "./Card";
 
+import Modal from "./instructions_modal";
+
 function GameBoard({ numberOfCards, mode }) {
   const [score, setScore] = useState(0);
   const [highscore, setHighScore] = useState(0);
@@ -14,6 +16,8 @@ function GameBoard({ numberOfCards, mode }) {
   const [isHome, setHome] = useState(false);
   const [clickedCards, setClickedCards] = useState([]);
   const [isGameOver, setGameOver] = useState(false);
+  // useState to control the modal visibility
+  const [showModal, setShowModal] = useState(true)
 
   const handleClick = (target) => {
     console.log("handleclick fired");
@@ -175,6 +179,7 @@ function GameBoard({ numberOfCards, mode }) {
 
   return (
     <>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}/>
       <section className="scoreboard">
         <p className="score">
           Score: <span>{score}</span>
